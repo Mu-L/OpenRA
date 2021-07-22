@@ -1,6 +1,6 @@
 #region Copyright & License Information
 /*
- * Copyright 2007-2020 The OpenRA Developers (see AUTHORS)
+ * Copyright 2007-2021 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
  * available to you under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of
@@ -72,7 +72,7 @@ namespace OpenRA
 		public readonly string[]
 			Rules, ServerTraits,
 			Sequences, ModelSequences, Cursors, Chrome, Assemblies, ChromeLayout,
-			Weapons, Voices, Notifications, Music, TileSets,
+			Weapons, Voices, Notifications, Music, Translations, TileSets,
 			ChromeMetrics, MapCompatibility, Missions, Hotkeys;
 
 		public readonly IReadOnlyDictionary<string, string> Packages;
@@ -113,7 +113,7 @@ namespace OpenRA
 				var filename = nodes[i].Value.Value;
 				var contents = package.GetStream(filename);
 				if (contents == null)
-					throw new YamlException("{0}: File `{1}` not found.".F(nodes[i].Location, filename));
+					throw new YamlException($"{nodes[i].Location}: File `{filename}` not found.");
 
 				nodes.RemoveAt(i);
 				nodes.InsertRange(i, MiniYaml.FromStream(contents, filename));
@@ -141,6 +141,7 @@ namespace OpenRA
 			Voices = YamlList(yaml, "Voices");
 			Notifications = YamlList(yaml, "Notifications");
 			Music = YamlList(yaml, "Music");
+			Translations = YamlList(yaml, "Translations");
 			TileSets = YamlList(yaml, "TileSets");
 			ChromeMetrics = YamlList(yaml, "ChromeMetrics");
 			Missions = YamlList(yaml, "Missions");
@@ -181,7 +182,7 @@ namespace OpenRA
 
 				var t = oc.FindType(kv.Key);
 				if (t == null || !typeof(IGlobalModData).IsAssignableFrom(t))
-					throw new InvalidDataException("`{0}` is not a valid mod manifest entry.".F(kv.Key));
+					throw new InvalidDataException($"`{kv.Key}` is not a valid mod manifest entry.");
 
 				IGlobalModData module;
 				var ctor = t.GetConstructor(new[] { typeof(MiniYaml) });
